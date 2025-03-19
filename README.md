@@ -1,6 +1,8 @@
 # Geneva [![Build Status](https://travis-ci.com/Kkevsterrr/geneva.svg?branch=master)](https://travis-ci.com/Kkevsterrr/geneva) [![codecov](https://codecov.io/gh/Kkevsterrr/geneva/branch/master/graph/badge.svg)](https://codecov.io/gh/Kkevsterrr/geneva) [![Documentation Status](https://readthedocs.org/projects/geneva/badge/?version=latest)](https://geneva.readthedocs.io/en/latest/?badge=latest)
 
-Geneva is an artificial intelligence tool that defeats censorship by exploiting bugs in censors, such as those in China, India, and Kazakhstan. Unlike many other anti-censorship solutions which require assistance from outside the censoring regime (Tor, VPNs, etc.), Geneva runs strictly on one side of the connection (either the client or server side).
+**Are you using Geneva? If so, let us know! Shoot us an email at geneva@cs.umd.edu, or to use PGP, email us directly with our keys [on our website](https://geneva.cs.umd.edu/people/).**
+
+Geneva is an artificial intelligence tool designed by researchers at the University of Maryland that defeats censorship by exploiting bugs in censors, such as those in China, India, and Kazakhstan. Unlike many other anti-censorship solutions which require assistance from outside the censoring regime (Tor, VPNs, etc.), Geneva runs strictly on one side of the connection (either the client or server side). Geneva should be considered a research project for researchers, and it is not built with a graphical user interface. 
 
 Under the hood, Geneva uses a genetic algorithm to evolve censorship evasion strategies and has found several previously unknown bugs in censors. Geneva's strategies manipulate the network stream to confuse the censor without impacting the client/server communication. This makes Geneva effective against many types of in-network censorship (though it cannot be used against IP-blocking censorship). 
 
@@ -24,6 +26,16 @@ Install Python dependencies:
 # python3 -m pip install -r requirements.txt
 ```
 
+On Debian 10 systems, some users have reported needing to install netfilterqueue directly from Github: 
+```
+# sudo python3 -m pip install --upgrade -U git+https://github.com/kti/python-netfilterqueue
+```
+
+On Arch systems, some users have reported needing to make liblibc.a available for netfilterqueue:
+```
+sudo ln -s -f /usr/lib64/libc.a /usr/lib64/liblibc.a 
+```
+
 ## Running a Strategy
 
 A censorship evasion strategy is simply a _description of how network traffic should be modified_. A strategy is not
@@ -40,7 +52,9 @@ code, it is a description that tells the engine how it should operate over traff
 ```
 
 Note that if you have stale `iptables` rules or other rules that rely on Geneva's default queues,
-this will fail. To fix this, remove those rules. 
+this will fail. To fix this, remove those rules.
+
+Also note that if you want to specify multiple ports for Geneva to monitor, you can specify a port range using `--server-port 4000:5000` to monitor all ports in the range 4000-5000, or you can specify a list like `--server-port 80,443,4444` to only monitor the explicit ports given.
 
 ## Strategy Library
 
@@ -85,7 +99,7 @@ Consider the following example of a simple Geneva strategy.
                            |
              +-------------+------------+
              |                          |
-+------------v----------+               v    <-- dupilcate has no right child, so this packet will be sent on the wire unimpacted
++------------v----------+               v    <-- duplicate has no right child, so this packet will be sent on the wire unimpacted
           tamper              
   {TCP:flags:replace:R}      <-- parameters to this action describe how the packet should be tampered 
 +------------+----------+
